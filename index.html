@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Document</title>
+        <style>
+            .item {
+                display: block;
+                box-sizing: border-box;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: normal;
+                word-break: break-all;
+                white-space: nowrap;
+                line-height: 23px;
+                padding-left: 10px;
+                padding-right: 10px;
+                background-color: #f00;
+            }
+        </style>
+    </head>
+    <body>
+        <a
+            class="item"
+            style="width: 200px;"
+            href="http://baidu.com"
+            title="http://baidu.comhttp://baidu.comhttp://baidu.com"
+            alt="xxx"
+            >http://baidu.comhttp://baidu.comhttp://baidu.comhttp://baidu.comhttp://baidu.comhttp://baidu.com://baidu.com</a
+        >
+        <script>
+            function getStyles(elem, prop) {
+                if (window.getComputedStyle) {
+                    if (prop) {
+                        return window.getComputedStyle(elem, null)[prop];
+                    } else {
+                        return window.getComputedStyle(elem, null);
+                    }
+                } else {
+                    if (prop) {
+                        return elem.currentStyle[prop];
+                    } else {
+                        return elem.currentStyle;
+                    }
+                }
+            }
+
+            function showRealProp(elem, ...prop) {
+                if (!elem) {
+                    throw new Error('dom 节点不能为空');
+                }
+                // 如果属性值为空 则返回0
+                if (prop.length === 0) {
+                    return 0;
+                }
+                // 真正的width
+                let realProp = {};
+                // 克隆dom
+                const cpNode = elem.cloneNode(true);
+                // 重置style样式
+                cpNode.setAttribute(
+                    'style',
+                    'display: inline-block;height: 0;visibility: hidden;'
+                );
+                // 将dom添加到body后面，如果不添加 下面无法计算盒子的宽度
+                document.body.appendChild(cpNode);
+                prop.forEach(item => {
+                    if (!item) {
+                        return;
+                    }
+                    // 获取真正属性的styles值
+                    realProp[item] = getStyles(cpNode)[item];
+                });
+                // 移除该dom节点
+                document.body.removeChild(cpNode);
+                return realProp;
+            }
+            const elem = document.getElementsByClassName('item')[0];
+            console.log(
+                'showRealProp(elem) :',
+                showRealProp(elem, ...['width', 'min-width'])
+            );
+        </script>
+    </body>
+</html>
